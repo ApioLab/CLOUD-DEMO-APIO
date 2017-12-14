@@ -1,0 +1,85 @@
+
+Primo STEP:
+- Fare in modo che le APP vengano scaricate e installate con il metodo che ti ho spiegato Lunedi.
+
+=====================================================================================
+Secondo STEP: {Iniziare ad usare le compatibilità}
+Abbiamo forzato per le APP:
+- SMART PLUG ZWAVE
+- SMART PLUG A157
+- SENSORE DI PORTA E FINESTRA
+Un'installazione con scelta multipla.
+Andava bene fino a che questa cosa non è diventata troppo comune e per ENEA avremmo dovuto fare tutte le
+App con una doppia versione.
+Quindi...
+
+L'idea mia è questa:
+Ogni App ha il suo riferimento base che poi è l'app posizionata all'interno del GATEWAY in NEWFILE
+Quando io provo ad installare un APP Mi compare la classica DIALOG che mi da una descrizione dell'oggetto, poi nel caso in cui quell'oggetto prevede la possibilità di scaricare altre APP la DIALOG presenta allora un tasto AVANTI nel quale viene presentata:
+Una OPTION dove all'interno ci sono tutte le APP quella di base contenuta nel gateway, poi tutte le altre APP trovate nello store e compatibili.
+La DIALOG quando un'app è selezionata ha in Alto la OPTION con il nome della APP
+Sotto come nella dialog dove viene data la descrizione dell'oggetto abbiamo a sinistra la preview dell'app a destra una sua descrizione
+a DX del Footer abbiamo un pulsante INSTALLA e uno indietro, a SX abbiamo una scritta che ci indica il prezzo dell'APP per ora tutte FREE.
+Quando clicco installa mi viene richiesta la PSW e parte la rotta realizzata allo STEP 1.
+
+Praticamente bisogna andare a cambiare il template modal delle applicazioni in NewFile per fare in modo che abbiano questa logica, ed in questo primo momento possiamo cambiare solo:
+- SMART PLUG ZWAVE
+- SMART PLUG A157
+- SENSORE DI PORTA E FINESTRA
+
+Poi bisogna dare un' ID di compatibilità che può essere un nome, un codice o che ne so alla:
+- SMART PLUG ZWAVE
+- SMART PLUG A157
+- SENSORE DI PORTA E FINESTRA
+
+
+Il DB lo mettiamo in STORE.APIO.CLOUD e no come avevamo detto oggi nel cloud in questo modo sta li e basta.
+In questo cloud c'è gia installato mongodb, creiamo solo un database chiamato store. In app.js facciamo la connessione
+a quel DB.
+
+La prima collection che facciamo la chiamiamo category, ogni documento in questa collection è uno dei nomi che abbiamo dato, in pratica la struttura sarà tipo qualcosa del genere:
+|
+|_compatibility:
+				|
+				|_id: SMART-PLUG
+				|
+				|_id: SENSORE CONTATTO (Porte e Finestre)
+				
+Poi il documento sarà fatto secondo la seguente forma, prendiamo ad esempio SMART-PLUG
+{
+	id: SMART-PLUG,
+	FGWPE(id): 
+		{
+			base: [versione_1, versione_2],
+			service: ["Macchina del caffè", "gestione carichi"]   {IDEM A SOTTO}
+		},
+	A5-02-01:
+		{
+			base:[{
+					"versione_1":{
+				}, {
+					"versione_2":{
+					
+				}
+			}]
+			service: [{
+				"Macchina del caffè":{
+				}, {
+				"gestione carichi":{
+					
+				}
+			}]
+			
+		}
+}
+
+Fatto questo bisogna:
+Fare rotta che chiamata la rotta /category/:ID mi ritorna tutte le app con le informazioni che mi servono (descrizione, immagini[le immagini vanno passate dal link del cloud e non dal link diretto sullo store, quello nessuno lo deve mai vedere deve sempre essere "proxato", dal cloud].)
+
+========================================================================================
+Steps successivi:
+
+Rotta per il caricamento veloce di un'app
+
+Nelle App bisogna essere in grado anche di gestire i pagamenti.
+Nel file Manifest.json di ogni APP ci deve essere anche il price.
